@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>React Lesson6</title>
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.8.6/umd/react.production.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.8.6/umd/react-dom.production.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.js"></script>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+
+	<div id="app"></div>
+
+	<script type="text/babel">
+	const app = document.getElementById('app');
+	class Task extends React.Component {
+		constructor(props) {
+			super(props);
+			this.state = {edit: false}
+		}
+		edit = () =>  {
+			this.setState({edit: true});
+		}
+
+		remove = () =>  {
+			this.props.deleteBlock(this.props.index);
+		}
+
+		save = () => {
+			this.props.update(this.refs.newText.value, this.props.index);
+			this.setState({edit: false});
+		}
+		rendNorm() {
+			return(
+			<div className="box">
+				<div className="text">{this.props.children}</div>
+				<button onClick={this.edit} className="btn light">Редактировать</button>
+				<button onClick={this.remove} className="btn red">Удалить</button>
+			</div>
+		);
+		}
+
+		rendEdit() {
+			return(
+			<div className="box">
+				<textarea ref="newText" defaultValue={this.props.children}></textarea>
+				<button onClick={this.save} className="btn success">Сохранить</button>
+			</div>
+		);
+		}
+		render() {
+			if(this.state.edit) {
+				return this.rendEdit();
+			} else {
+				return this.rendNorm();
+			}
+		
+		}
+	}
+		
+	class Field extends React.Component {
+		constructor(props) {
+			super(props);
+			this.state = { tasks:[]
+			}
+		}
+		add = (text) => {
+			let arr = this.state.tasks;
+			arr.push(text);
+			this.setState({tasks: arr});
+		}
+		eachTask = (item, i) => {
+			return (<Task key={i} index={i} update={this.updateText} deleteBlock={this.deleteBlock}>
+						{item}
+					</Task>);
+		}
+
+		deleteBlock = (i) => {
+			let arr = this.state.tasks;
+			arr.splice(i, 1);
+			this.setState({tasks: arr});
+		}
+
+		updateText = (text, i) => {
+			let arr = this.state.tasks;
+			arr[i] = text;
+			this.setState({tasks: arr});
+		}
+			
+			render() {
+				return(
+			<div className="field">
+				<button onClick={this.add.bind(null, 'Новое задание')} className="btn new">Новое задание</button>
+				{ this.state.tasks.map(this.eachTask)}
+			</div>
+				);
+			}
+		}
+	
+
+	ReactDOM.render(
+			<Field />
+			,
+			app
+		);
+	</script>
+
+</body>
+</html>
